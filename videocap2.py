@@ -10,15 +10,9 @@ import imutils
 import cv2, pafy
 from keras.models import load_model
 import numpy as np
-
-#from pylsl import StreamInfo, StreamOutlet
-
-##info = StreamInfo(name='emotion_PC3', type='Markers', channel_count=1,
-#                 channel_format='string', source_id='uniqueid12345')
-# Initialize the stream.
-##outlet = StreamOutlet(info)
-#url = 'https://youtu.be/eahnOcp883k'
 #from mhyt import yt_download
+
+#url = 'https://youtu.be/eahnOcp883k'
 #file = "Kav.mp4"
 #yt_download(url,file)
 label = None
