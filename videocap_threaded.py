@@ -4,55 +4,14 @@ Created on Wed May 27 15:02:14 2020
 
 @author: agleo
 """
-from threading import Thread
-import sys
-from queue import Queue
 
 from keras.preprocessing.image import img_to_array
 import imutils
 import cv2, pafy
 from keras.models import load_model
 import numpy as np
-class FileVideoStream:
-	def __init__(self, path, queueSize=128):
-		# initialize the file video stream along with the boolean
-		# used to indicate if the thread should be stopped or not
-		self.stream = cv2.VideoCapture(path)
-		self.stopped = False
-		# initialize the queue used to store frames read from
-		# the video file
-		self.Q = Queue(maxsize=queueSize)
-	def start(self):
-		# start a thread to read frames from the file video stream
-		t = Thread(target=self.update, args=())
-		t.daemon = True
-		t.start()
-		return self
-	def update(self):
-		# keep looping infinitely
-		while True:
-			# if the thread indicator variable is set, stop the
-			# thread
-			if self.stopped:
-				return
-			# otherwise, ensure the queue has room in it
-			if not self.Q.full():
-				# read the next frame from the file
-				(grabbed, frame) = self.stream.read()
-				# if the `grabbed` boolean is `False`, then we have
-				# reached the end of the video file
-				if not grabbed:
-					self.stop()
-					return
-				# add the frame to the queue
-				self.Q.put(frame)
-
-#from pylsl import StreamInfo, StreamOutlet
-
-##info = StreamInfo(name='emotion_PC3', type='Markers', channel_count=1,
-#                 channel_format='string', source_id='uniqueid12345')
-# Initialize the stream.
-##outlet = StreamOutlet(info)
+from imutils.video import FileVideoStream
+import time
 #url = 'https://youtu.be/eahnOcp883k'
 #from mhyt import yt_download
 #file = "Kav.mp4"
@@ -69,15 +28,15 @@ face_detection = cv2.CascadeClassifier(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
 EMOTIONS = ["angry", "disgust", "scared", "happy", "sad", "surprised",
             "neutral"]
+path = 'Kav.mp4'
+fvs = FileVideoStream(path).start()
+time.sleep(1.0)
 
-# starting video streaming
-#cv2.namedWindow('Camera')
-camera = cv2.VideoCapture('Kav.mp4') # video to sample
-n = 7 # how many faces do we want to detect
+n = 6 # how many faces do we want to detect
 while True:
-    frame = camera.read()[1]
+    frame = fvs.read()
     # reading the frame
-    frame = imutils.resize(frame, width=400)
+    frame = imutils.resize(frame, width=700)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_detection.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=1, minSize=(30, 30),
                                             flags=cv2.CASCADE_SCALE_IMAGE)
@@ -124,5 +83,5 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-camera.release()
 cv2.destroyAllWindows()
+fvs.stop()
