@@ -7,11 +7,11 @@ Created on Wed May 27 15:02:14 2020
 from threading import Thread
 import sys
 from queue import Queue
-
-from keras.preprocessing.image import img_to_array
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import img_to_array
 import imutils
 import cv2, pafy
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import numpy as np
 class FileVideoStream:
 	def __init__(self, path, queueSize=128):
